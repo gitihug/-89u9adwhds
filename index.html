@@ -377,6 +377,7 @@ nav ul a:hover {
   background: #c3a15a12;
 }
 
+/* Düzenlenen Dosya Yükleme Alanı (Label mantığı ile telefonda sorunsuz çalışır) */
 .ai-upload-box {
   border: 2px dashed var(--line);
   padding: 40px 20px;
@@ -387,7 +388,7 @@ nav ul a:hover {
   transition: all .25s ease;
   margin-bottom: 24px;
   position: relative;
-  overflow: hidden;
+  display: block;
 }
 
 .ai-upload-box:hover {
@@ -409,6 +410,7 @@ nav ul a:hover {
   object-fit: cover;
   display: none;
   z-index: 2;
+  border-radius: 6px;
 }
 
 .ai-result-card {
@@ -463,6 +465,12 @@ nav ul a:hover {
   animation: scanMove 2s infinite ease-in-out;
 }
 
+@keyframes scanMove {
+  0% { top: 0; }
+  50% { top: 100%; }
+  100% { top: 0; }
+}
+
 .ai-output {
   display: none;
   animation: fadeIn .5s ease forwards;
@@ -513,18 +521,6 @@ nav ul a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.ai-hair-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  mix-blend-mode: hard-light;
-  opacity: 0.8;
-  filter: contrast(1.1) brightness(0.9);
 }
 
 .ai-details {
@@ -793,14 +789,14 @@ footer {
           <button class="btn gold" style="width: 100%; margin-top: 12px;" onclick="runAiAnalysis()">Stilimi Yapay Zeka İle Üret</button>
         </div>
 
-        <!-- Tab 2: Fotoğraf Modu -->
+        <!-- Tab 2: Fotoğraf Modu (Label entegrasyonu ile telefonda garantili çalışır) -->
         <div id="ai-tab-upload" style="display: none;">
-          <div class="ai-upload-box" id="upload-box" onclick="document.getElementById('ai-file-input').click()">
+          <label for="ai-file-input" class="ai-upload-box">
             <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
-            <p style="font-weight: 600; margin-bottom: 4px;">Fotoğrafınızı Buraya Sürükleyin veya Seçin</p>
-            <p style="font-size: 13px; color: var(--mute);">PNG, JPG (Yapay zeka yüz hatlarını otomatik tarar)</p>
+            <p style="font-weight: 600; margin-bottom: 4px;">Fotoğraf Seçmek İçin Dokun</p>
+            <p style="font-size: 13px; color: var(--mute);">Kameradan veya galeriden fotoğraf yükle</p>
             <img id="preview-img" class="ai-preview-img" alt="Yüklenen Görsel">
-          </div>
+          </label>
           <input type="file" id="ai-file-input" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
           <button class="btn gold" style="width: 100%;" onclick="runAiAnalysis()">Görseli Analiz Et</button>
         </div>
@@ -812,14 +808,14 @@ footer {
         <div class="ai-result-placeholder" id="res-placeholder">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
           <h4 style="font-size: 22px; color: var(--tx); margin-bottom: 8px;">AI Analizine Hazır</h4>
-          <p>Sol taraftan tercihlerinizi seçip "Üret" butonuna basarak kişiselleştirilmiş saç & sakal simülasyonunuzu görüntüleyin.</p>
+          <p>Tercihlerinizi seçip "Üret" butonuna basarak simülasyonunuzu görüntüleyin.</p>
         </div>
 
         <!-- Tarama Animasyonu -->
         <div class="ai-scan-animation" id="res-scanning">
           <div class="ai-scanner">
             <div class="scan-line"></div>
-            <div style="position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color: var(--br2); font-size:14px; letter-spacing:1px;">
+            <div style="position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color: var(--br2); font-size:14px; letter-spacing:1px; text-align:center; padding:0 10px;">
               [ YÜZ VE SAÇ Mimarisi Çiziliyor ]
             </div>
           </div>
@@ -953,27 +949,26 @@ function handleFileUpload(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
       uploadedImageBase64 = e.target.result;
-      document.getElementById('preview-img').src = uploadedImageBase64;
-      document.getElementById('preview-img').style.display = 'block';
+      const preview = document.getElementById('preview-img');
+      preview.src = uploadedImageBase64;
+      preview.style.display = 'block';
     };
     reader.readAsDataURL(file);
   }
 }
 
-// YAPAY ZEKA BAĞLANTISI BURADA KURULUYOR
+// YAPAY ZEKA BAĞLANTISI
 async function runAiAnalysis() {
   document.getElementById('res-placeholder').style.display = 'none';
   document.getElementById('res-output').style.display = 'none';
   document.getElementById('res-scanning').style.display = 'block';
 
-  // Seçimlere göre ingilizce prompt hazırlıyoruz
   const promptText = `High quality photo portrait of a handsome male model, face shape: ${selectedOptions.face}, hair: ${selectedOptions.hair}, style: ${selectedOptions.style}, professional barber shop lighting, 8k resolution, photorealistic`;
 
   try {
     const response = await fetch('https://fal.run/fal-ai/fast-sdxl', {
       method: 'POST',
       headers: {
-        // LÜTFEN AŞAĞIDAKİ TIRNAK İÇİNDEKİ YERE KENDİ FAL.AI API ANAHTARINI YAPIŞTIR
         'Authorization': 'Key fal_sk_388c2cd29fa94429a216229f400f3add:302679900d38f534691127938b1f7786
 ',
         'Content-Type': 'application/json'
