@@ -463,12 +463,6 @@ nav ul a:hover {
   animation: scanMove 2s infinite ease-in-out;
 }
 
-@keyframes scanMove {
-  0% { top: 0; }
-  50% { top: 100%; }
-  100% { top: 0; }
-}
-
 .ai-output {
   display: none;
   animation: fadeIn .5s ease forwards;
@@ -796,7 +790,7 @@ footer {
             </div>
           </div>
 
-          <button class="btn gold" style="width: 100%; margin-top: 12px;" onclick="runAiAnalysis()">Stilimi Analiz Et</button>
+          <button class="btn gold" style="width: 100%; margin-top: 12px;" onclick="runAiAnalysis()">Stilimi Yapay Zeka İle Üret</button>
         </div>
 
         <!-- Tab 2: Fotoğraf Modu -->
@@ -818,7 +812,7 @@ footer {
         <div class="ai-result-placeholder" id="res-placeholder">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
           <h4 style="font-size: 22px; color: var(--tx); margin-bottom: 8px;">AI Analizine Hazır</h4>
-          <p>Sol taraftan tercihlerinizi seçip veya fotoğrafınızı yükleyip "Analiz Et" butonuna basarak kişiselleştirilmiş saç & sakal simülasyonunuzu görüntüleyin.</p>
+          <p>Sol taraftan tercihlerinizi seçip "Üret" butonuna basarak kişiselleştirilmiş saç & sakal simülasyonunuzu görüntüleyin.</p>
         </div>
 
         <!-- Tarama Animasyonu -->
@@ -826,29 +820,25 @@ footer {
           <div class="ai-scanner">
             <div class="scan-line"></div>
             <div style="position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color: var(--br2); font-size:14px; letter-spacing:1px;">
-              [ YÜZ VE SAÇ Mimarisi Taranıyor ]
+              [ YÜZ VE SAÇ Mimarisi Çiziliyor ]
             </div>
           </div>
-          <p style="color: var(--br2); font-weight: 600;">Yapay Zeka Algoritması Hesaplanıyor...</p>
+          <p style="color: var(--br2); font-weight: 600;">Yapay Zeka Yeni Modeli Oluşturuyor (10-15sn)...</p>
         </div>
 
         <!-- Çıktı Kartı -->
         <div class="ai-output" id="res-output">
-          <div class="ai-match-badge">🏆 %98 MÜKEMMEL UYUM</div>
-          <h3 id="out-hair-title">Textured Crop & Mid Fade</h3>
-          <span class="tag" id="out-beard-tag">Sakal Stili: Keskin Kontürlü Kirli Sakal</span>
+          <div class="ai-match-badge">🏆 %100 ÖZEL ÜRETİM</div>
+          <h3 id="out-hair-title">Saç Stili</h3>
+          <span class="tag" id="out-beard-tag">Sakal Stili: Yapay Zeka Seçimi</span>
 
-          <!-- Kullanıcının Kendi Yüzü Üzerine Saç Entegrasyonu Simülasyonu -->
           <div class="ai-face-container">
-            <!-- Alt Katman: Varsayılan model yüzü veya kullanıcının yüklediği resim -->
             <img id="user-face-base" class="ai-base-face" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80" alt="Yüzünüz">
-            <!-- Üst Katman: Yapay saç modeli -->
-            <img id="ai-hair-layer" class="ai-hair-overlay" src="https://i.imgur.com/8Qj9j3R.png" alt="Saç Stili">
           </div>
 
           <div class="ai-details">
             <strong>Neden Bu Model?</strong>
-            <p id="out-desc" style="margin-top: 4px;">Kare yüz yapınızın güçlü çene hattını vurgulamak için yanlar kademeli kısaltılırken, üst kısımdaki doğal dalgalarla hacim dengesi sağlanmıştır.</p>
+            <p id="out-desc" style="margin-top: 4px;">Fal.ai algoritması yüz hatlarınıza ve saç yapınıza en uygun olan bu özel konsepti sizin için sıfırdan çizdi.</p>
             <ul>
               <li id="out-tip-1">Mat Wax / Kil doku verici ürün tavsiye edilir.</li>
               <li id="out-tip-2">Bakım periyodu: 3 haftada bir.</li>
@@ -923,7 +913,6 @@ footer {
 </footer>
 
 <script>
-// AI Seçenekleri Yönetimi
 let selectedOptions = {
   face: 'Kare / Keskin Hatlı',
   hair: 'Düz & Kalın Telli',
@@ -932,7 +921,6 @@ let selectedOptions = {
 
 let uploadedImageBase64 = null;
 
-// Tab Değiştirme
 function switchAiTab(tab) {
   const btnTest = document.querySelectorAll('.ai-tab-btn')[0];
   const btnUpload = document.querySelectorAll('.ai-tab-btn')[1];
@@ -952,7 +940,6 @@ function switchAiTab(tab) {
   }
 }
 
-// Seçenek Seçme
 function selectOpt(element, type, value) {
   const parent = element.parentElement;
   parent.querySelectorAll('.ai-opt-btn').forEach(btn => btn.classList.remove('selected'));
@@ -960,7 +947,6 @@ function selectOpt(element, type, value) {
   selectedOptions[type] = value;
 }
 
-// Görsel Yükleme Önizleme
 function handleFileUpload(event) {
   const file = event.target.files[0];
   if (file) {
@@ -974,41 +960,49 @@ function handleFileUpload(event) {
   }
 }
 
-// AI Analizini Simüle Et
-function runAiAnalysis() {
-  // Canlı bağlantı olmadığından şimdilik simülasyon yapıyoruz.
+// YAPAY ZEKA BAĞLANTISI BURADA KURULUYOR
+async function runAiAnalysis() {
   document.getElementById('res-placeholder').style.display = 'none';
   document.getElementById('res-output').style.display = 'none';
   document.getElementById('res-scanning').style.display = 'block';
 
-  setTimeout(() => {
-    document.getElementById('res-scanning').style.display = 'none';
-    document.getElementById('res-output').style.display = 'block';
+  // Seçimlere göre ingilizce prompt hazırlıyoruz
+  const promptText = `High quality photo portrait of a handsome male model, face shape: ${selectedOptions.face}, hair: ${selectedOptions.hair}, style: ${selectedOptions.style}, professional barber shop lighting, 8k resolution, photorealistic`;
 
-    // Seçeneklere göre sonuçları güncelle (Simülasyon)
-    const titleEl = document.getElementById('out-hair-title');
-    const beardEl = document.getElementById('out-beard-tag');
-    const descEl = document.getElementById('out-desc');
-    const faceBaseImg = document.getElementById('user-face-base');
+  try {
+    const response = await fetch('https://fal.run/fal-ai/fast-sdxl', {
+      method: 'POST',
+      headers: {
+        // LÜTFEN AŞAĞIDAKİ TIRNAK İÇİNDEKİ YERE KENDİ FAL.AI API ANAHTARINI YAPIŞTIR
+        'Authorization': 'Key fal_sk_388c2cd29fa94429a216229f400f3add:302679900d38f534691127938b1f7786
+',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: promptText,
+        image_size: "square_hd",
+        num_inference_steps: 25
+      })
+    });
 
-    if (uploadedImageBase64) {
-      faceBaseImg.src = uploadedImageBase64; // Kullanıcının yüzünü koy
+    const data = await response.json();
+
+    if (data.images && data.images.length > 0) {
+      document.getElementById('user-face-base').src = data.images[0].url;
+      document.getElementById('out-hair-title').innerText = selectedOptions.style;
+      document.getElementById('out-beard-tag').innerText = "Stil: " + selectedOptions.hair;
+    } else {
+      document.getElementById('user-face-base').src = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80";
     }
+  } catch (err) {
+    console.log("Bağlantı hatası:", err);
+    document.getElementById('user-face-base').src = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80";
+  }
 
-    if (selectedOptions.hair.includes('Dalgalı')) {
-      titleEl.innerText = "Textured Crop & Taper Fade";
-      beardEl.innerText = "Sakal Stili: Doğal Kirli Sakal & Hat Çizimi";
-      descEl.innerText = "Dalgalı saç yapınız için üstte doku bırakılarak hacim kazandırılmış, yanlar sıfırlanarak modern yüz dengesi kurulmuştur.";
-    } else if (selectedOptions.face.includes('Yuvarlak')) {
-      titleEl.innerText = "High & Tight Quiff Fade";
-      beardEl.innerText = "Sakal Stili: Uzun Keskin Çene Sakalı";
-      descEl.innerText = "Yuvarlak yüz hatlarınızı daha uzun ve keskin göstermek adına üst kısım hacimli fönlenip çene sakalıyla uzunluk algısı oluşturulmuştur.";
-    }
-    // Varsayılan seçenekler için ilk kodda yazanlar kalır.
-  }, 1800);
+  document.getElementById('res-scanning').style.display = 'none';
+  document.getElementById('res-output').style.display = 'block';
 }
 
-// AI Sonucunu Randevu Formuna Aktar
 function applyAiStyleToBooking() {
   const styleTitle = document.getElementById('out-hair-title').innerText;
   const select = document.getElementById('service-select');
@@ -1016,8 +1010,6 @@ function applyAiStyleToBooking() {
 
   select.value = "AI Özel Önerilen Stil Uygulaması";
   notes.value = "AI Analiz Sonucu Seçilen Model: " + styleTitle;
-
-  // Randevu formuna kaydır
   document.getElementById('randevu').scrollIntoView({ behavior: 'smooth' });
 }
 </script>
